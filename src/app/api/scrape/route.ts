@@ -97,7 +97,7 @@ async function handleScraping(url: string) {
     // Webページの取得
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'NewsLetterCreator/1.0 (社労士向けニュースレター作成ツール; 業務支援目的)',
+        'User-Agent': 'NewsLetterCreator/1.0 (Business Support Tool)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
         'Cache-Control': 'no-cache'
