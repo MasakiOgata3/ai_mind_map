@@ -89,44 +89,240 @@ export default function Home() {
 
     setPdfLoading(true)
     try {
-      const response = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: article.title,
-          summary: article.summary,
-          url: article.url,
-          companyInfo: {
-            name: '社会保険労務士事務所',
-            email: 'info@example.com',
-            phone: 'TEL: 03-1234-5678'
-          }
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('PDF生成に失敗しました')
+      // 新しいウィンドウでプリント用ページを開く
+      const printWindow = window.open('', '_blank', 'width=800,height=600')
+      
+      if (!printWindow) {
+        alert('ポップアップがブロックされました。ポップアップを許可してください。')
+        return
       }
 
-      // PDFをダウンロード
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
-      a.href = url
-      a.download = `newsletter-${new Date().toISOString().split('T')[0]}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      const htmlContent = generatePrintHTML(article.title, article.summary, article.url)
+      printWindow.document.write(htmlContent)
+      printWindow.document.close()
+      
+      // 印刷ダイアログを表示
+      printWindow.focus()
+      setTimeout(() => {
+        printWindow.print()
+      }, 500)
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'PDF生成に失敗しました')
     } finally {
       setPdfLoading(false)
     }
+  }
+
+  const generatePrintHTML = (title: string, summary: string, sourceUrl: string) => {
+    const now = new Date()
+    const formattedDate = now.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+
+    return `
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>ニュースレター - ${title}</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap');
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Noto Sans JP', sans-serif;
+          line-height: 1.7;
+          color: #333;
+          background: white;
+          padding: 20px;
+        }
+        
+        .newsletter {
+          max-width: 800px;
+          margin: 0 auto;
+          background: white;
+        }
+        
+        .header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 40px 30px;
+          text-align: center;
+          border-radius: 12px 12px 0 0;
+        }
+        
+        .header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+          font-size: 16px;
+          opacity: 0.9;
+          margin-bottom: 20px;
+        }
+        
+        .header .date {
+          font-size: 14px;
+          opacity: 0.8;
+        }
+        
+        .content {
+          padding: 40px 30px;
+          border-left: 1px solid #e2e8f0;
+          border-right: 1px solid #e2e8f0;
+        }
+        
+        .article {
+          margin-bottom: 30px;
+        }
+        
+        .article-title {
+          font-size: 22px;
+          font-weight: 700;
+          color: #2d3748;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 3px solid #667eea;
+        }
+        
+        .article-meta {
+          font-size: 12px;
+          color: #718096;
+          margin-bottom: 20px;
+          padding: 8px 12px;
+          background: #f7fafc;
+          border-radius: 6px;
+          border-left: 4px solid #667eea;
+        }
+        
+        .article-content {
+          font-size: 15px;
+          line-height: 1.8;
+          color: #4a5568;
+          white-space: pre-wrap;
+        }
+        
+        .footer {
+          background: #2d3748;
+          color: white;
+          padding: 30px;
+          text-align: center;
+          border-radius: 0 0 12px 12px;
+        }
+        
+        .footer .company {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 10px;
+        }
+        
+        .footer .contact {
+          font-size: 14px;
+          opacity: 0.8;
+          line-height: 1.5;
+        }
+        
+        .footer .generated {
+          margin-top: 20px;
+          padding-top: 20px;
+          border-top: 1px solid #4a5568;
+          font-size: 12px;
+          opacity: 0.6;
+        }
+        
+        @media print {
+          body { 
+            background: white; 
+            padding: 0; 
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+          }
+          .newsletter { 
+            box-shadow: none; 
+            border: 1px solid #ccc;
+          }
+          .no-print { display: none !important; }
+        }
+        
+        .print-instructions {
+          background: #f0f9ff;
+          border: 2px solid #0ea5e9;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 20px;
+          text-align: center;
+        }
+        
+        .print-button {
+          background: #0ea5e9;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          margin: 10px;
+        }
+        
+        .print-button:hover {
+          background: #0284c7;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="print-instructions no-print">
+        <h3>PDF保存方法</h3>
+        <p>1. 下の「印刷」ボタンをクリック</p>
+        <p>2. 送信先で「PDFに保存」を選択</p>
+        <p>3. 「保存」をクリックしてPDFをダウンロード</p>
+        <button class="print-button" onclick="window.print()">📄 印刷 / PDF保存</button>
+        <button class="print-button" onclick="window.close()" style="background: #6b7280;">❌ 閉じる</button>
+      </div>
+      
+      <div class="newsletter">
+        <div class="header">
+          <h1>労務関連ニュースレター</h1>
+          <div class="subtitle">重要な労務情報をお届けします</div>
+          <div class="date">${formattedDate}</div>
+        </div>
+        
+        <div class="content">
+          <div class="article">
+            <h2 class="article-title">${title}</h2>
+            <div class="article-meta">
+              出典: ${sourceUrl ? new URL(sourceUrl).hostname : '政府公式サイト'}
+            </div>
+            <div class="article-content">${summary}</div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <div class="company">社会保険労務士事務所</div>
+          <div class="contact">
+            info@example.com<br>
+            TEL: 03-1234-5678
+          </div>
+          <div class="generated">
+            このニュースレターはAIによって生成されました<br>
+            NewsLetter Creator - 社労士向けニュースレター作成ツール
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+    `
   }
 
   const handleStartEdit = () => {
