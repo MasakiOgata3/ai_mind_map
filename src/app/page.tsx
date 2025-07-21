@@ -42,16 +42,9 @@ export default function Home() {
     setArticle(null)
 
     try {
-      // Step 1: スクレイピング
-      const scrapeResult = await scrapeUrl(url.trim())
-      
-      if (!scrapeResult.success || !scrapeResult.data) {
-        throw new Error(scrapeResult.error || 'コンテンツの取得に失敗しました')
-      }
-
-      // Step 2: AI要約
+      // Claude APIに直接URLを渡して要約してもらう
       const summaryResult = await summarizeContent({
-        content: scrapeResult.data.content,
+        url: url.trim(),
         maxLength: 1000,
         tone: 'professional'
       })
@@ -63,9 +56,9 @@ export default function Home() {
       // 結果をセット
       const newArticle: Article = {
         id: Date.now().toString(),
-        url: scrapeResult.data.url,
+        url: url.trim(),
         title: summaryResult.data.title,
-        content: scrapeResult.data.content,
+        content: '', // コンテンツはClaude APIが処理するので空
         summary: summaryResult.data.summary,
         createdAt: new Date(),
         updatedAt: new Date()
