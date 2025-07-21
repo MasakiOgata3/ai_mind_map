@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Newsletter Creator
 
-## Getting Started
+社労士向けニュースレター作成ツール
 
-First, run the development server:
+## 概要
+
+政府サイト（厚生労働省等）のURLを入力するだけで、AI（Claude）が自動的に内容を要約し、プロフェッショナルなニュースレターPDFを生成するWebアプリケーションです。
+
+## 主な機能
+
+- 🔗 **URL入力**: 政府公式サイトのURLを貼り付け
+- 🤖 **AI要約**: Claude APIで専門的な要約を自動生成
+- ✏️ **編集機能**: タイトル・内容を自由に編集
+- 📄 **PDF出力**: 美しいニュースレターをワンクリックで生成
+- 🎨 **Apple風デザイン**: モダンで使いやすいUI/UX
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 15, TypeScript, Tailwind CSS, shadcn/ui
+- **AI**: Claude 3.5 Sonnet API (Anthropic)
+- **PDF生成**: Puppeteer
+- **デプロイ**: Vercel
+
+## セットアップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 2. 環境変数の設定
+
+`.env.local`ファイルを作成し、以下を設定：
+
+```bash
+# Claude API設定
+ANTHROPIC_API_KEY=your_claude_api_key_here
+
+# セキュリティ設定
+ALLOWED_DOMAINS=mhlw.go.jp,gov.jp,jil.go.jp,nenkin.go.jp,nta.go.jp
+
+# アプリケーション設定
+NEXT_PUBLIC_APP_NAME=NewsLetter Creator
+NEXT_PUBLIC_APP_DESCRIPTION=社労士向けニュースレター作成ツール
+```
+
+### 3. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 でアクセス
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## スクリプト
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev      # 開発サーバーを起動
+npm run build    # プロダクション用ビルド
+npm run start    # プロダクションサーバーを起動
+npm run lint     # ESLintでコード品質チェック
+npm run test     # テスト実行
+```
 
-## Learn More
+## 使い方
 
-To learn more about Next.js, take a look at the following resources:
+1. 政府サイト（厚生労働省等）のURLをコピー
+2. アプリに貼り付けて「要約開始」をクリック
+3. AIが自動で要約を生成
+4. 必要に応じて内容を編集
+5. 「PDF出力」でニュースレターをダウンロード
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## デプロイ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+このプロジェクトはVercelにデプロイできます：
 
-## Deploy on Vercel
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/MasakiOgata3/newsletter-creator)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ライセンス
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License
