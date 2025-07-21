@@ -42,9 +42,9 @@ export default function Home() {
     setArticle(null)
 
     try {
-      // Claude APIに直接URLを渡して要約してもらう
+      // コンテンツを直接要約
       const summaryResult = await summarizeContent({
-        url: url.trim(),
+        content: url.trim(), // urlの変数名だが、実際はコンテンツが入っている
         maxLength: 1000,
         tone: 'professional'
       })
@@ -56,9 +56,9 @@ export default function Home() {
       // 結果をセット
       const newArticle: Article = {
         id: Date.now().toString(),
-        url: url.trim(),
+        url: '', // URLは使わない
         title: summaryResult.data.title,
-        content: '', // コンテンツはClaude APIが処理するので空
+        content: url.trim(),
         summary: summaryResult.data.summary,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -396,39 +396,36 @@ export default function Home() {
           </h2>
           
           <p className="text-xl text-gray-600 mb-8 max-w-2xl">
-            厚生労働省等のURLを貼り付けるだけで、AIが自動で1000文字以内に要約し、
+            厚生労働省等のサイトの内容をコピー&ペーストするだけで、AIが自動で1000文字以内に要約し、
             プロフェッショナルなニュースレターを生成します。
           </p>
 
-          {/* URL入力フォーム */}
-          <div className="w-full max-w-2xl mb-12">
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <Input
-                  type="url"
-                  placeholder="https://www.mhlw.go.jp/... （厚生労働省等のURL）"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300/50 bg-white/50 backdrop-blur-sm focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ease-out placeholder:text-gray-400 text-lg h-14"
-                />
-              </div>
+          {/* コンテンツ入力フォーム */}
+          <div className="w-full max-w-4xl mb-12">
+            <div className="space-y-4">
+              <Textarea
+                placeholder="政府サイトの内容をここにコピー&ペーストしてください..."
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="w-full min-h-[200px] px-4 py-3 rounded-xl border border-gray-300/50 bg-white/50 backdrop-blur-sm focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ease-out placeholder:text-gray-400 text-base resize-none"
+              />
               <Button 
                 onClick={handleSummarize}
-                className="group flex items-center gap-2 px-8 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border border-blue-400/20 h-14"
+                className="group flex items-center gap-2 px-8 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border border-blue-400/20"
                 disabled={!url.trim() || loadingState === 'loading'}
               >
                 {loadingState === 'loading' ? (
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                 ) : (
-                  <Link className="w-5 h-5 mr-2" />
+                  <Sparkles className="w-5 h-5 mr-2" />
                 )}
-                {loadingState === 'loading' ? '処理中...' : '要約開始'}
+                {loadingState === 'loading' ? '処理中...' : 'AI要約開始'}
               </Button>
             </div>
             
             <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
               <Shield className="w-4 h-4" />
-              安全：政府公式サイトのみ対応
+              安全：AIによる高精度な要約処理
             </div>
           </div>
 
