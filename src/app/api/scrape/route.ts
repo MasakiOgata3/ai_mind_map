@@ -4,6 +4,40 @@ import { load } from 'cheerio'
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json()
+    return await handleScraping(url)
+  } catch (error) {
+    console.error('スクレイピングエラー:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const url = searchParams.get('url')
+    
+    if (!url) {
+      return NextResponse.json(
+        { error: 'URLパラメータが必要です' },
+        { status: 400 }
+      )
+    }
+    
+    return await handleScraping(url)
+  } catch (error) {
+    console.error('スクレイピングエラー:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handleScraping(url: string) {
+  try {
 
     // URLのバリデーション
     if (!url || typeof url !== 'string') {
