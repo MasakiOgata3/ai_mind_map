@@ -8,7 +8,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('スクレイピングエラー:', error)
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        details: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack available'
+      },
       { status: 500 }
     )
   }
@@ -30,7 +34,11 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('スクレイピングエラー:', error)
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        details: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack available'
+      },
       { status: 500 }
     )
   }
@@ -170,7 +178,11 @@ async function handleScraping(url: string) {
   } catch (error) {
     console.error('スクレイピングエラー:', error)
     return NextResponse.json(
-      { error: 'サーバーエラーが発生しました' },
+      { 
+        error: 'サーバーエラーが発生しました',
+        details: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack available'
+      },
       { status: 500 }
     )
   }
