@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   // 初期値を取得する関数
-  const getStoredValue = (): T => {
+  const getStoredValue = useCallback((): T => {
     if (typeof window === 'undefined') {
       return initialValue
     }
@@ -14,7 +14,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       console.warn(`Error reading localStorage key "${key}":`, error)
       return initialValue
     }
-  }
+  }, [key, initialValue])
 
   const [storedValue, setStoredValue] = useState<T>(getStoredValue)
 
@@ -35,7 +35,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   // マウント後に再度チェック（SSR対応）
   useEffect(() => {
     setStoredValue(getStoredValue())
-  }, [key])
+  }, [getStoredValue])
 
   return [storedValue, setValue] as const
 }
