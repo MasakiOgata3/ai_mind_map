@@ -25,14 +25,29 @@ export async function POST(request: NextRequest) {
     }
 
     // 許可されたドメインのチェック
-    const allowedDomains = process.env.ALLOWED_DOMAINS?.split(',') || []
-    const isAllowedDomain = allowedDomains.some(domain => 
-      validUrl.hostname.includes(domain.trim())
-    )
+    const allowedDomains = process.env.ALLOWED_DOMAINS?.split(',') || [
+      'mhlw.go.jp', 'gov.jp', 'jil.go.jp', 'nenkin.go.jp', 'nta.go.jp'
+    ]
+    console.log('Allowed domains:', allowedDomains)
+    console.log('Request hostname:', validUrl.hostname)
+    
+    const isAllowedDomain = allowedDomains.some(domain => {
+      const trimmedDomain = domain.trim()
+      // より柔軟なドメインマッチング
+      return validUrl.hostname.includes(trimmedDomain) || 
+             validUrl.hostname.endsWith('.' + trimmedDomain) ||
+             validUrl.hostname === trimmedDomain
+    })
 
     if (!isAllowedDomain) {
       return NextResponse.json(
-        { error: '許可されていないドメインです。政府公式サイトのみ対応しています。' },
+        { 
+          error: '許可されていないドメインです。政府公式サイトのみ対応しています。',
+          debug: {
+            hostname: validUrl.hostname,
+            allowedDomains: allowedDomains
+          }
+        },
         { status: 403 }
       )
     }
